@@ -1,0 +1,72 @@
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "8080:80"
+    volumes:
+    - pgadmin_data:/var/lib/pgadmin  # <--- This line persists pgAdmin config
+
+  etl:
+    build: ../etl
+    container_name: etl_pipeline
+    restart: "no"
+    volumes:
+      - ../data_prep:/app/data   # Mount host CSVs into container
+    depends_on:
+      - postgres
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+
+  fastapi:
+    build:
+      context: ./api
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+    depends_on:
+      - postgres
+
+  streamlit:
+    build:
+      context: ./streamlit
+    container_name: streamlit_app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - fastapi
+    volumes:
+      - ./streamlit:/app
+    environment:
+      - STREAMLIT_SERVER_RUN_ON_SAVE=true
+
+volumes:
+  postgres_data:
+  pgadmin_data:
