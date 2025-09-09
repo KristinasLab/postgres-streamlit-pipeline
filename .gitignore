@@ -3,6 +3,7 @@
 
 # Python virtual environment
 myvenv
+venv
 
 # VS Code settings
 .vscode/
