@@ -1,17 +1,17 @@
-# Use official Python image
 FROM python:3.11-slim
 
-# Set work directory
 WORKDIR /app
 
-COPY ./docker/api ./app
-
-# Install dependencies
+# Copy requirements and install
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy app code
+# Copy FastAPI code
 COPY ./app ./app
 
-# Command to run the app
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+# Expose port
+EXPOSE 8000
+
+# Run Uvicorn with correct module path
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+
