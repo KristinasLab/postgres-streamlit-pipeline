@@ -9,6 +9,7 @@ import plotly.express as px
 import streamlit as st
 from plotly.subplots import make_subplots
 import plotly.graph_objects as go
+import os
 
 # ---------------------------------------------------------------------------
 # Initialize empty DataFrames
@@ -19,18 +20,24 @@ df_date = pd.DataFrame()
 df_revenue = pd.DataFrame()
 
 # ---------------------------------------------------------------------------
+# Base URL for FastAPI
+# ---------------------------------------------------------------------------
+FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "http://fastapi_app:8000")
+
+# ---------------------------------------------------------------------------
 # Load data from FastAPI endpoints
 # ---------------------------------------------------------------------------
 api_endpoints = {
-    "company": "df_company",
-    "headcount": "df_headcount",
-    "date": "df_date",
-    "revenue": "df_revenue"
+    "company": f"{FASTAPI_BASE_URL}/company",
+    "headcount": f"{FASTAPI_BASE_URL}/headcount",
+    "date": f"{FASTAPI_BASE_URL}/date",
+    "revenue": f"{FASTAPI_BASE_URL}/revenue"
 }
 
-for endpoint, df_name in api_endpoints.items():
+for endpoint, url in api_endpoints.items():
+    df_name = f"df_{endpoint}"
     try:
-        response = requests.get(f"http://fastapi_app:8000/{endpoint}")
+        response = requests.get(url)
         response.raise_for_status()
         data = response.json()
         globals()[df_name] = pd.DataFrame(data)
