@@ -22,16 +22,17 @@ df_revenue = pd.DataFrame()
 # ---------------------------------------------------------------------------
 # Base URL for FastAPI
 # ---------------------------------------------------------------------------
-FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "http://fastapi_app:8000")
+FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "http://fastapi_app:8000") #for Docker Compose / local dev.
+#FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "https://my-fastapi-app.onrender.com")
 
 # ---------------------------------------------------------------------------
 # Load data from FastAPI endpoints
 # ---------------------------------------------------------------------------
 api_endpoints = {
-    "company": f"{FASTAPI_BASE_URL}/company",
-    "headcount": f"{FASTAPI_BASE_URL}/headcount",
-    "date": f"{FASTAPI_BASE_URL}/date",
-    "revenue": f"{FASTAPI_BASE_URL}/revenue"
+    "company": f"{FASTAPI_BASE_URL}/company/",
+    "headcount": f"{FASTAPI_BASE_URL}/headcount/",
+    "date": f"{FASTAPI_BASE_URL}/date/",
+    "revenue": f"{FASTAPI_BASE_URL}/revenue/"
 }
 
 for endpoint, url in api_endpoints.items():
