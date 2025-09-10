@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: fastapi-backend
+    env: python
+    repo: https://github.com/KristinasLab/postgres-streamlit-pipeline
+    branch: main
+    buildCommand: pip install -r docker/api/requirements.txt
+    startCommand: uvicorn main:app --app-dir docker/api/app --host 0.0.0.0 --port 10000
+
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: PYTHONPATH
+        value: docker/api/app
+      - key: DATABASE_URL
+        fromDatabase:
+          name: postgres-db-fastapi-conn

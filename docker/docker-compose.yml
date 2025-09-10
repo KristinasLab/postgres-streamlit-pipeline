@@ -45,6 +45,8 @@ services:
     container_name: fastapi_app
     ports:
       - "8000:8000"
+    volumes:
+    - ./api:/app
     environment:
       DB_USER: ${DB_USER}
       DB_PASSWORD: ${DB_PASSWORD}
@@ -66,6 +68,7 @@ services:
       - ./streamlit:/app
     environment:
       - STREAMLIT_SERVER_RUN_ON_SAVE=true
+      - FASTAPI_URL=http://fastapi_app:8000
 
 volumes:
   postgres_data:

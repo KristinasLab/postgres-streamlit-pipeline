@@ -22,9 +22,15 @@ df_revenue = pd.DataFrame()
 # ---------------------------------------------------------------------------
 # Base URL for FastAPI
 # ---------------------------------------------------------------------------
-FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "http://fastapi_app:8000") #for Docker Compose / local dev.
-#FASTAPI_BASE_URL = os.getenv("FASTAPI_URL", "https://my-fastapi-app.onrender.com")
+# Try to get FASTAPI_URL from environment
+FASTAPI_BASE_URL = os.getenv("FASTAPI_URL")
 
+# Fallbacks based on environment
+if FASTAPI_BASE_URL is None:
+    if os.getenv("RENDER"):  # If running on Render
+        FASTAPI_BASE_URL = "https://your-fastapi-app.onrender.com"
+    else:
+        FASTAPI_BASE_URL = "http://fastapi_app:8000"  # Docker Compose default
 # ---------------------------------------------------------------------------
 # Load data from FastAPI endpoints
 # ---------------------------------------------------------------------------
