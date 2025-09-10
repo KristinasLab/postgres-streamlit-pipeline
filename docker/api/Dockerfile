@@ -9,9 +9,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy FastAPI code
 COPY ./app ./app
 
-# Expose port
+# Expose default port (optional, for documentation)
 EXPOSE 8000
 
-# Run Uvicorn with correct module path
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "${PORT:-8000}"]
+# Use shell form CMD so env vars are expanded at runtime
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}
 

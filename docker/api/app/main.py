@@ -5,8 +5,17 @@ from . import models, schemas, crud
 from .database import SessionLocal, engine
 from .schemas import Company, Headcount, Revenue, Dim_Date
 models.Base.metadata.create_all(bind=engine)
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # oder spezifisch: ["https://deine-streamlit-app.streamlit.app"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Dependency to get db session
 def get_db():

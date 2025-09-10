@@ -1,24 +1,28 @@
 import os
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, declarative_base
 from dotenv import load_dotenv
 
-# Load environment variables from a .env file
-load_dotenv()
+# Load .env only for local development
+if os.getenv("RENDER") is None:
+    load_dotenv()
 
-# Retrieve database credentials from environment variables
-DB_USER = os.getenv("DB_USER")
-DB_PASSWORD = os.getenv("DB_PASSWORD")
-DB_NAME = os.getenv("DB_NAME")
-DB_HOST = os.getenv("DB_HOST", "localhost")  # Default to localhost if not set
-DB_PORT = os.getenv("DB_PORT")
+# Prefer DATABASE_URL if available (Render)
+DATABASE_URL = os.getenv("DATABASE_URL")
 
-# Create the database URL using the environment variables
-DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# Fallback for local Docker setup
+if DATABASE_URL is None:
+    DB_USER = os.getenv("DB_USER")
+    DB_PASSWORD = os.getenv("DB_PASSWORD")
+    DB_NAME = os.getenv("DB_NAME")
+    DB_HOST = os.getenv("DB_HOST", "localhost")
+    DB_PORT = os.getenv("DB_PORT", "5432")
+    DATABASE_URL = f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
 
-# Create a SQLAlchemy engine
-engine = create_engine(DATABASE_URL) # This is the connection to the database
+# Create engine and session
+engine = create_engine(DATABASE_URL)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+Base = declarative_base()
 
 # Create a SessionLocal class for each database sessions
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine) 
